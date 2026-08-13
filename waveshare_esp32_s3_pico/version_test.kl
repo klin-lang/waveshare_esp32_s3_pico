@@ -2,6 +2,6 @@ module waveshare_esp32_s3_pico
 
 import testing
 
-fn test_version_is_two() {
-    testing.assert_eq_i32(version(), 2)
+fn test_version_is_three() {
+    testing.assert_eq_i32(version(), 3)
 }

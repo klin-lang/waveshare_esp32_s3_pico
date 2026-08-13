@@ -1,28 +1,27 @@
-// Waveshare ESP32-S3-Pico onboard WS2812 (GPIO21) — bit-bang RGB wire order.
-// Tune waits in board rgb.kl on hardware if colours glitch under IDF.
+// Waveshare ESP32-S3-Pico onboard WS2812 (GPIO21) — RMT TX, wire RGB.
 import "github/klin-lang/machine_esp" machine
 import "../../waveshare_esp32_s3_pico" board
 
 @[cexport, codename("klin_app_main")]
 fn rgb_main() {
-    let data = machine.pin_out_s3(board.rgb())
+    let led = board.rgb_out()
     while true {
-        board.rgb_write(data, 32, 0, 0) // red
+        led.write(32, 0, 0) // red
         let mut i: i32 = 0
         while i < 4000000 {
             i = i + 1
         }
-        board.rgb_write(data, 0, 32, 0) // green
+        led.write(0, 32, 0) // green
         i = 0
         while i < 4000000 {
             i = i + 1
         }
-        board.rgb_write(data, 0, 0, 32) // blue
+        led.write(0, 0, 32) // blue
         i = 0
         while i < 4000000 {
             i = i + 1
         }
-        board.rgb_write(data, 0, 0, 0) // off
+        led.write(0, 0, 0) // off
         i = 0
         while i < 4000000 {
             i = i + 1
