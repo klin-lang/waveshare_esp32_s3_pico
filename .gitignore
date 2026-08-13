@@ -1,0 +1,14 @@
+out/
+build/
+sdkconfig
+sdkconfig.old
+managed_components/
+dependencies.lock
+.klin/
+klin.lock
+.vscode/
+.idea/
+*.elf
+*.bin
+*.map
+.DS_Store

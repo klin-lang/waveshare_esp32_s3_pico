@@ -1,0 +1,7 @@
+module waveshare_esp32_s3_pico
+
+import testing
+
+fn test_version_is_one() {
+    testing.assert_eq_i32(version(), 1)
+}

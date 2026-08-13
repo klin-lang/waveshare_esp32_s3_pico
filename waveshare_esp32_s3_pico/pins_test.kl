@@ -1,0 +1,19 @@
+module waveshare_esp32_s3_pico
+
+import testing
+
+fn test_pico_silkscreen_map() {
+    testing.assert_eq_i32(d0(), 11)
+    testing.assert_eq_i32(d10(), 35)
+    testing.assert_eq_i32(d28(), 9)
+    testing.assert_eq_i32(rgb(), 21)
+    testing.assert_eq_i32(usb_adc(), 3)
+    testing.assert_eq_i32(a1(), d26())
+    testing.assert_eq_i32(uart0_tx(), d0())
+    testing.assert_eq_i32(i2c0_sda(), d6())
+}
+
+fn test_clocks_explicit() {
+    testing.assert_eq_i32(peri_hz(), 80000000)
+    testing.assert_eq_i32(xtal_hz(), 40000000)
+}
