@@ -1,11 +1,15 @@
-/// Crude WS2812 bit-bang on the onboard NeoPixel (GPIO21).
-/// Waveshare ESP32-S3-Pico FAQ: wire order is **RGB** (not classic GRB).
-/// Timing busy-waits assume a fast CPU under ESP-IDF — tune `rgb_wait`
-/// on hardware if colours glitch (IDF interrupts can disturb edges).
-/// Not RMT; no hidden DMA. Pass a `Pin` from `machine.pin_out_s3(rgb())`.
+/// Onboard WS2812 (NeoPixel) on GPIO21.
+/// Default path: ESP32-S3 **RMT TX** (`machine.rmt_tx_s3`) — hardware timing,
+/// stable under IDF interrupts. Wire order is **RGB** (Waveshare FAQ; not GRB).
+/// Bit-bang remains as `rgb_write_bb` escape hatch. No heap / no DMA.
 module waveshare_esp32_s3_pico
 
 import "github/klin-lang/machine_esp" machine
+
+/// RMT-backed one-pixel driver (default).
+pub struct Rgb {
+    rmt: machine.Rmt
+}
 
 fn rgb_wait(n: i32) {
     let mut i: i32 = 0
@@ -14,12 +18,11 @@ fn rgb_wait(n: i32) {
     }
 }
 
-/// Send one colour byte (MSB first) on `data` pin.
-fn rgb_send_byte(data: machine.Pin, b: i32) {
+/// Send one colour byte (MSB first) on `data` pin (CPU busy-wait).
+fn rgb_send_byte_bb(data: machine.Pin, b: i32) {
     let mut mask: i32 = 128
     while mask != 0 {
         if (b & mask) != 0 {
-            // 1-bit: longer high
             data.high()
             rgb_wait(12)
             data.low()
@@ -34,11 +37,61 @@ fn rgb_send_byte(data: machine.Pin, b: i32) {
     }
 }
 
-/// Write one pixel as wire **RGB** (r, g, b each 0..=255). Latch ~50 µs low.
-pub fn rgb_write(data: machine.Pin, r: i32, g: i32, b: i32) {
-    rgb_send_byte(data, r & 255)
-    rgb_send_byte(data, g & 255)
-    rgb_send_byte(data, b & 255)
+/// Bit-bang one pixel as wire **RGB**. Prefer `rgb_out` / `write` (RMT).
+pub fn rgb_write_bb(data: machine.Pin, r: i32, g: i32, b: i32) {
+    rgb_send_byte_bb(data, r & 255)
+    rgb_send_byte_bb(data, g & 255)
+    rgb_send_byte_bb(data, b & 255)
     data.low()
     rgb_wait(2000)
+}
+
+/// Encode one WS2812 bit at ~10 MHz RMT ticks (APB/8 @ 80 MHz → 100 ns).
+/// bit0: 0.3 µs high + 0.9 µs low; bit1: 0.9 µs high + 0.3 µs low.
+fn rgb_rmt_bit(one: i32): i32 {
+    if one != 0 {
+        return machine.rmt_symbol(9, 1, 3, 0)
+    }
+    return machine.rmt_symbol(3, 1, 9, 0)
+}
+
+fn rgb_rmt_put_byte(rmt: machine.Rmt, start: i32, b: i32): i32 {
+    let mut idx = start
+    let mut mask: i32 = 128
+    while mask != 0 {
+        let mut bit: i32 = 0
+        if (b & mask) != 0 {
+            bit = 1
+        }
+        rmt.put(idx, rgb_rmt_bit(bit))
+        idx = idx + 1
+        mask = mask >> 1
+    }
+    return idx
+}
+
+/// Open onboard NeoPixel via RMT channel 0, APB `apb_hz` (typically 80e6).
+pub fn rgb_out_hz(apb_hz: i32): Rgb {
+    let rmt = machine.rmt_tx_s3(rgb(), 0, apb_hz)
+    return Rgb{ rmt: rmt }
+}
+
+/// Open onboard NeoPixel via RMT (APB = `peri_hz()`).
+pub fn rgb_out(): Rgb {
+    return rgb_out_hz(peri_hz())
+}
+
+/// Write one pixel as wire **RGB** (r, g, b each 0..=255) via RMT + ≥50 µs reset.
+pub fn (led: Rgb) write(r: i32, g: i32, b: i32) {
+    let rmt = led.rmt
+    let mut idx: i32 = 0
+    idx = rgb_rmt_put_byte(rmt, idx, r & 255)
+    idx = rgb_rmt_put_byte(rmt, idx, g & 255)
+    idx = rgb_rmt_put_byte(rmt, idx, b & 255)
+    // ≥50 µs low reset @ 100 ns/tick → 500+500 ticks, then end marker
+    rmt.put(idx, machine.rmt_symbol(600, 0, 600, 0))
+    idx = idx + 1
+    rmt.put(idx, 0)
+    rmt.start()
+    rmt.wait_done()
 }
