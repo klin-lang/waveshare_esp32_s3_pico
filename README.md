@@ -1,7 +1,9 @@
 # waveshare_esp32_s3_pico
 
-Klin board pack for [Waveshare ESP32-S3-Pico](https://www.waveshare.com/wiki/ESP32-S3-Pico)
-(Pico form-factor, **ESP32-S3R2**).
+Klin board pack for **Waveshare ESP32-S3-Pico** (Pico form-factor, **ESP32-S3R2**).
+
+- Wiki: [waveshare.com/wiki/ESP32-S3-Pico](https://www.waveshare.com/wiki/ESP32-S3-Pico)
+- Shop (PL): [Botland — ESP32-S3-Pico](https://botland.com.pl/moduly-wifi-i-bt-esp32/23396-esp32-s3-pico-plytka-rozwojowa-zgodna-z-raspberry-pi-pico-waveshare-23803.html)
 
 Chip API: [`machine_esp`](https://github.com/klin-lang/machine_esp) `@v0.6.0`
 (`*_s3` factories). Boot/flash via **ESP-IDF** in the examples (CH343 USB-UART
