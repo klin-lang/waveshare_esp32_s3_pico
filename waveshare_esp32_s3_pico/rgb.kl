@@ -1,4 +1,5 @@
-/// Crude WS2812 (GRB) bit-bang on the onboard NeoPixel (GPIO21).
+/// Crude WS2812 bit-bang on the onboard NeoPixel (GPIO21).
+/// Waveshare ESP32-S3-Pico FAQ: wire order is **RGB** (not classic GRB).
 /// Timing busy-waits assume a fast CPU under ESP-IDF — tune `rgb_wait`
 /// on hardware if colours glitch (IDF interrupts can disturb edges).
 /// Not RMT; no hidden DMA. Pass a `Pin` from `machine.pin_out_s3(rgb())`.
@@ -13,7 +14,7 @@ fn rgb_wait(n: i32) {
     }
 }
 
-/// Send one GRB byte (MSB first) on `data` pin.
+/// Send one colour byte (MSB first) on `data` pin.
 fn rgb_send_byte(data: machine.Pin, b: i32) {
     let mut mask: i32 = 128
     while mask != 0 {
@@ -33,10 +34,10 @@ fn rgb_send_byte(data: machine.Pin, b: i32) {
     }
 }
 
-/// Write one WS2812 pixel (g, r, b each 0..=255). Latch with ~50 µs low.
-pub fn rgb_write(data: machine.Pin, g: i32, r: i32, b: i32) {
-    rgb_send_byte(data, g & 255)
+/// Write one pixel as wire **RGB** (r, g, b each 0..=255). Latch ~50 µs low.
+pub fn rgb_write(data: machine.Pin, r: i32, g: i32, b: i32) {
     rgb_send_byte(data, r & 255)
+    rgb_send_byte(data, g & 255)
     rgb_send_byte(data, b & 255)
     data.low()
     rgb_wait(2000)

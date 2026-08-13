@@ -1,8 +1,9 @@
 # rgb
 
-Onboard **WS2812** on GPIO21 (`board.rgb()`) via crude GRB bit-bang
-(`board.rgb_write`). Interrupts under ESP-IDF may glitch edges — tune waits
-in `rgb.kl` on hardware. Reliable RMT path is a later follow-up.
+Onboard **WS2812** on GPIO21 (`board.rgb()`) via crude bit-bang
+(`board.rgb_write`, wire **RGB** per Waveshare FAQ). Interrupts under ESP-IDF
+may glitch edges — tune waits in package `rgb.kl` on hardware. Reliable RMT
+path is a later follow-up.
 
 ## Build
 

@@ -10,13 +10,13 @@ on the board’s USB-C).
 **No Wi‑Fi / BLE** in this pack — silicon has radio; Klin `machine_esp` does not
 expose `esp_wifi` (see Klin [099](https://github.com/klin-lang/klin/blob/main/issues/099-machine-esp-esp32-s3.md)).
 
-## Status (`@v0.1.0`)
+## Status (`@v0.1.1`)
 
 | Piece | Notes |
 |---|---|
 | Pin map | Pico silkscreen `d0`…`d28`, `a1`…`a3`, `rgb` (GPIO21), `usb_adc` |
 | Helpers | `uart0_*`, `i2c0_*`, `spi_*`, `peri_hz` / `xtal_hz` (explicit) |
-| WS2812 | `rgb_write` bit-bang (tune on HW; not RMT) |
+| WS2812 | `rgb_write` bit-bang, wire **RGB** (Waveshare FAQ; tune on HW; not RMT) |
 | Examples | `blink` (D10→GPIO35), `rgb` (GPIO21) — `idf.py set-target esp32s3` |
 
 ## Usage
@@ -33,7 +33,7 @@ fn app() {
 ```
 
 ```sh
-klin get github/klin-lang/waveshare_esp32_s3_pico@v0.1.0
+klin get github/klin-lang/waveshare_esp32_s3_pico@v0.1.1
 klin get github/klin-lang/machine_esp@v0.6.0
 ```
 
