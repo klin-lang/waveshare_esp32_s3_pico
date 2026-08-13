@@ -1,0 +1,32 @@
+// Waveshare ESP32-S3-Pico SPI2 on Pico GP10/11/12 (D10/D11/D12) + soft CS D13.
+// Clock out 0xA5 @ 1 MHz mode0. Soft CS toggled around each transfer.
+import "github/klin-lang/machine_esp" machine
+import "../../waveshare_esp32_s3_pico" board
+
+@[cexport, codename("klin_app_main")]
+fn spi_main() {
+    let s = machine.spi_out_s3(
+        2,
+        board.spi_sck(),
+        board.spi_mosi(),
+        board.spi_miso(),
+        board.peri_hz(),
+        1000000,
+        0
+    )
+    let cs = machine.pin_out_s3(board.spi_cs())
+    cs.high()
+    while true {
+        cs.low()
+        let r = s.write_read_u8(0xA5)
+        cs.high()
+        let mut i: i32 = 0
+        while i < 10000 {
+            i = i + 1 + r * 0
+        }
+    }
+}
+
+fn main() {
+    spi_main()
+}

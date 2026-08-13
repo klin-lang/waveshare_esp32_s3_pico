@@ -1,0 +1,24 @@
+// Waveshare ESP32-S3-Pico I2C0 on Pico GP6/GP7 (D6/D7 → GPIO17/18).
+// Init bus @ 100 kHz (XTAL), then blink D10 so the demo is visible without a slave.
+import "github/klin-lang/machine_esp" machine
+import "../../waveshare_esp32_s3_pico" board
+
+@[cexport, codename("klin_app_main")]
+fn i2c_main() {
+    let bus = machine.i2c_out_s3(0, board.i2c0_sda(), board.i2c0_scl(), board.xtal_hz(), 100000)
+    let led = machine.pin_out_s3(board.d10())
+    while true {
+        led.toggle()
+        let mut i: i32 = 0
+        while i < 2000000 {
+            i = i + 1
+        }
+        if false {
+            bus.deinit()
+        }
+    }
+}
+
+fn main() {
+    i2c_main()
+}

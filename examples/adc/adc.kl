@@ -1,0 +1,17 @@
+// Waveshare ESP32-S3-Pico: ADC1 on Pico A1 (GPIO7 / CH6) → PWM brightness on D10.
+import "github/klin-lang/machine_esp" machine
+import "../../waveshare_esp32_s3_pico" board
+
+@[cexport, codename("klin_app_main")]
+fn adc_main() {
+    let adc = machine.adc_out_s3(board.a1(), board.a1_adc_ch())
+    let led = machine.pwm_out_s3(board.d10(), 0, 0, board.peri_hz())
+    led.freq(1000)
+    while true {
+        led.duty_u16(adc.read_u16())
+    }
+}
+
+fn main() {
+    adc_main()
+}

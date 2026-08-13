@@ -12,14 +12,14 @@ on the board’s USB-C).
 **No Wi‑Fi / BLE** in this pack — silicon has radio; Klin `machine_esp` does not
 expose `esp_wifi` (see Klin [099](https://github.com/klin-lang/klin/blob/main/issues/099-machine-esp-esp32-s3.md)).
 
-## Status (`@v0.1.1`)
+## Status (`@v0.2.0`)
 
 | Piece | Notes |
 |---|---|
 | Pin map | Pico silkscreen `d0`…`d28`, `a1`…`a3`, `rgb` (GPIO21), `usb_adc` |
-| Helpers | `uart0_*`, `i2c0_*`, `spi_*`, `peri_hz` / `xtal_hz` (explicit) |
+| Helpers | `uart0_*`, `i2c0_*`, `spi_*` / `spi_cs`, `a*_adc_ch`, `peri_hz` / `xtal_hz` |
 | WS2812 | `rgb_write` bit-bang, wire **RGB** (Waveshare FAQ; tune on HW; not RMT) |
-| Examples | `blink` (D10→GPIO35), `rgb` (GPIO21) — `idf.py set-target esp32s3` |
+| Examples | `blink`, `rgb`, `uart`, `i2c`, `spi`, `adc`, `pwm` — `esp32s3` |
 
 ## Usage
 
@@ -35,16 +35,26 @@ fn app() {
 ```
 
 ```sh
-klin get github/klin-lang/waveshare_esp32_s3_pico@v0.1.1
+klin get github/klin-lang/waveshare_esp32_s3_pico@v0.2.0
 klin get github/klin-lang/machine_esp@v0.6.0
 ```
 
 ## Examples
 
+| Example | Pins (silkscreen) |
+|---|---|
+| `blink` | D10 (GPIO35) toggle |
+| `rgb` | onboard WS2812 GPIO21 |
+| `uart` | D0/D1 UART0 TX/RX |
+| `i2c` | D6/D7 I2C0 + D10 blink |
+| `spi` | D10/D11/D12 SPI2 + soft CS D13 |
+| `adc` | A1 (CH6) → PWM D10 |
+| `pwm` | D10 LEDC fade |
+
 ```sh
 . $IDF_PATH/export.sh
 klin get   # from repo root (pulls machine_esp per klin.mod)
-cd examples/blink   # or examples/rgb
+cd examples/uart   # or blink / rgb / i2c / spi / adc / pwm
 make emit KLIN=/path/to/klin/bin/klin.dart
 make build
 make flash
@@ -69,6 +79,8 @@ make flash
 | D12 | 37 | USB_ADC | 3 |
 | D13 | 38 | | |
 | D14 | 39 | | |
+
+ADC1 channels (S3): A1→CH6, A2→CH7, A3→CH8 (`a1_adc_ch` …).
 
 ## Tests
 

@@ -11,6 +11,11 @@ fn test_pico_silkscreen_map() {
     testing.assert_eq_i32(a1(), d26())
     testing.assert_eq_i32(uart0_tx(), d0())
     testing.assert_eq_i32(i2c0_sda(), d6())
+    testing.assert_eq_i32(spi_sck(), d10())
+    testing.assert_eq_i32(spi_cs(), d13())
+    testing.assert_eq_i32(a1_adc_ch(), 6)
+    testing.assert_eq_i32(a2_adc_ch(), 7)
+    testing.assert_eq_i32(a3_adc_ch(), 8)
 }
 
 fn test_clocks_explicit() {

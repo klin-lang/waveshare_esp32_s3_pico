@@ -57,6 +57,14 @@ pub fn a1(): i32 { return 7 }
 pub fn a2(): i32 { return 8 }
 pub fn a3(): i32 { return 9 }
 
+/// ADC1 channel for `a1`/`a2`/`a3` (S3: CH0→GPIO1 … CH9→GPIO10).
+pub fn a1_adc_ch(): i32 { return 6 }
+pub fn a2_adc_ch(): i32 { return 7 }
+pub fn a3_adc_ch(): i32 { return 8 }
+
+/// Soft SPI chip-select (Pico GP13 silkscreen / D13).
+pub fn spi_cs(): i32 { return 38 }
+
 /// Default UART0 matrix pins matching Pico GP0/GP1 silkscreen (D0/D1).
 pub fn uart0_tx(): i32 { return 11 }
 pub fn uart0_rx(): i32 { return 12 }
